@@ -1,10 +1,10 @@
 {
   "development": {
+    "dialect": "postgres",
     "username": "postgres",
     "password": "nppsjuoll",
     "database": "iclone",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
+    "host": "127.0.0.1"
   },
   "test": {
     "username": "root",

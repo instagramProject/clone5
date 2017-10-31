@@ -7,8 +7,13 @@ var router = express.Router();
 var models = require('./models');
 var multer = require('multer');
 var sharp = require('sharp');
-
+var cookieParser = require('cookie-parser')
+var expressSession = require('express-session')
 var userPhotos = require('./model/photo');
+var passport = require('passport');
+
+require('./strategies/passport-local')(passport);
+var userRoutes = require('./routes/user')(passport);
 /*app.get('/', function(req,res){
 	res.sendFile(path.join(__dirname + '/public/login.html'));
 })
@@ -21,8 +26,13 @@ app.get('/signup', function(req,res){
 app.set('views', __dirname + '/views')
 app.set('view engine', 'ejs');
 
+app.use(cookieParser());
+app.use(expressSession({secret: 'changelater'}));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended:false }))
+app.use(bodyParser.urlencoded({ extended:false }));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use('/user', userRoutes)
 
 var storage = multer.diskStorage({
 	destination: function(req, file, cb){
@@ -43,20 +53,19 @@ app.get('/', function(req,res){
 	})
 });
 
-app.post('/', function(req, res){
 
-	var createUserAccount = models.User.build({
+app.post('/', passport.authenticate('local-signup'), function(req, res){
+
+	/*var createUserAccount = models.User.build({
 		username: req.body.username,
 		password: req.body.password
 	})
 
 	createUserAccount.save().then(function(){
 		console.log('new account created..')
-	})
+	})*/
 	res.redirect('/')
 })
-
-
 
 app.post('/create', upload.single('imageUpload'), function(req,res,next){
 
@@ -80,7 +89,7 @@ app.get('/thumbnails/:id', function(req,res){
 
 app.get('/:id', function(req,res, next){
 	var photos = userPhotos.list(); 
-	console.log(req.params.id);
+	//console.log(req.params.id);
 	//console.log(photos)
 	//console.log(userPhotos.findById)
 	//console.log(userPhotos.photoList[0])

@@ -2,7 +2,6 @@ var nextUserImageId = 0;
 
 function Photos() {
 	this.photoList = [];
-
 }
 
 Photos.prototype.addPhoto = function(params, filename) {
