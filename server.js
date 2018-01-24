@@ -11,7 +11,6 @@ var cookieParser = require('cookie-parser')
 var expressSession = require('express-session')
 var userPhotos = require('./model/photo');
 var passport = require('passport');
-
 require('./strategies/passport-local')(passport);
 var userRoutes = require('./routes/user')(passport);
 /*app.get('/', function(req,res){
@@ -47,16 +46,15 @@ var upload = multer({ storage: storage })
 
 
 app.get('/', function(req,res){
-	models.User.findAll().then(function(){
+	models.Users.findAll().then(function(){
 		res.render('index')
 		
 	})
 });
 
-
 app.post('/', passport.authenticate('local-signup'), function(req, res){
 
-	/*var createUserAccount = models.User.build({
+	/*var createUserAccount = models.Users.build({
 		username: req.body.username,
 		password: req.body.password
 	})
@@ -65,12 +63,34 @@ app.post('/', passport.authenticate('local-signup'), function(req, res){
 		console.log('new account created..')
 	})*/
 	res.redirect('/')
+})  
+
+
+router.post('/', passport.authenticate('local-login'), function(req, res, next){
+	if (err) {
+		return next(err);
+	}
+	if (!user) {
+		return next({error: true, message: info})
+	}
+	req.login(user, function(loginError){
+		if(loginError){
+			return next(loginError);
+		}
+		res.cookie('jwt', user.token);
+		res.cookie('username', user.username);
+		res.cookie('userID', user.id);
+		res.cookie('cookieName', user.dbData);
+
+		return res.redirect('/homepage');
+	})
+	return router; 
 })
 
 app.post('/create', upload.single('imageUpload'), function(req,res,next){
 
 	//console.log( __dirname + '/public/images/' + req.file.filename)
-	sharp(__dirname + '/public/images/' + req.file.filename)
+		sharp(__dirname + '/public/images/' + req.file.filename)
 	.ignoreAspectRatio()
 	.resize(300,300)
 	.toFile(__dirname + '/public/thumbnails/' + req.file.filename, function(err, info){

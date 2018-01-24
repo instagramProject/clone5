@@ -219,6 +219,7 @@ public:
 	VOption *set( const char *name, VInterpolate value ); 
 	VOption *set( const char *name, std::vector<VImage> value );
 	VOption *set( const char *name, std::vector<double> value );
+	VOption *set( const char *name, std::vector<int> value );
 	VOption *set( const char *name, VipsBlob *value ); 
 
 	VOption *set( const char *name, bool *value ); 
@@ -307,13 +308,13 @@ public:
 		return( vips_image_get_yres( get_image() ) ); 
 	}
 
-	double 
+	int
 	xoffset()
 	{
 		return( vips_image_get_xoffset( get_image() ) ); 
 	}
 
-	double 
+	int
 	yoffset()
 	{
 		return( vips_image_get_yoffset( get_image() ) ); 
@@ -468,8 +469,21 @@ public:
 
 	static VImage new_matrixv( int width, int height, ... );
 
-	VImage new_from_image( std::vector<double> pixel );
-	VImage new_from_image( double pixel );
+	VImage new_from_image( std::vector<double> pixel )
+	{
+		VipsImage *image;
+
+		if( !(image = vips_image_new_from_image( this->get_image(), 
+			&pixel[0], pixel.size() )) )
+			throw( VError() ); 
+
+		return( VImage( image ) ); 
+	}
+
+	VImage new_from_image( double pixel )
+	{
+		return( new_from_image( to_vectorv( 1, pixel ) ) ); 
+	}
 
 	VImage write( VImage out );
 
@@ -519,14 +533,17 @@ public:
 	VImage
 	bandjoin( double other, VOption *options = 0 )
 	{
-		return( bandjoin( this->new_from_image( other ), options ) ); 
+		return( bandjoin( to_vector( other ), options ) ); 
 	}
 
 	VImage
 	bandjoin( std::vector<double> other, VOption *options = 0 )
 	{
-		return( bandjoin( this->new_from_image( other ), options ) ); 
+		return( bandjoin_const( other, options ) ); 
 	}
+
+	VImage composite( VImage other, VipsBlendMode mode, 
+		VOption *options = 0 );
 
 	std::complex<double> minpos( VOption *options = 0 );
 
