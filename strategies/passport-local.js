@@ -9,13 +9,14 @@ module.exports = function(passport){
     var body = req.body
     return {
         id: body.id,
+        email: body.email,
         username: body.username,
         password: body.password
     	};
 	}
 
 	passport.serializeUser(function(user, done){
-		done(null, user.id);
+		done(null, user.id)
 	})
 
 	passport.deserializeUser(function(id, done){
@@ -25,7 +26,8 @@ module.exports = function(passport){
 	})
 
 	passport.use('local-signup', new LocalStrategy({
-		username: 'email',
+		email: 'email',
+		username: 'username',
 		password: 'password',
 		passReqToCallback: true
 	}, processSignupCallback));
@@ -46,35 +48,44 @@ module.exports = function(passport){
 			if(user){
 				return done(null, false);
 			} else {
-				var userToCreate = getUserParams(request);
 
+				var userToCreate = getUserParams(request);
+				console.log(request)
 				bcrypt.hash(userToCreate.password, saltRounds, function(err, hash){
 				userToCreate.password = hash; 
 				User.create(userToCreate)
 				.then(function(createdRecord){
 					createdRecord.password = undefined;
 					return done(null, createdRecord);
-					})
-				})
-			}
-		})
-	};
+					})})
+			}})}
 
 	function processLoginCallback(email, password, done){
 		User.findOne({
 			where: {
-				'email' : email 
+				'email': email
 			}
 		})
 		.then(function(user){
+			console.log(user.password)
+			console.log(password)
+			//console.log(result)
 			if (!user) {
 				return done(null, false)
 			}
-			bcrypt.compare(password, user.password, function(err, result){
-				user.password = undefined;
-				return result ? done (null,user) : done(null, false);
-			})
-		})
+			else {
+			bcrypt.compare(password, user.password, function(err, res){
+				
+				if (err){
+					return done(err)
+				}
+				if (!res){
+					return done(null, false)
+				}
+				return done(null, user);
+				
+			})}
+		});
 	}
 
 }
