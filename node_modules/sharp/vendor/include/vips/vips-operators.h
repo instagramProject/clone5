@@ -1,5 +1,5 @@
 // headers for vips operations
-// Mon 13 Mar 13:22:09 GMT 2017
+// Sun 26 Nov 17:44:41 GMT 2017
 // this file is generated automatically, do not edit!
 
 static void system( char * cmd_format , VOption *options = 0 );
@@ -40,12 +40,14 @@ VImage project( VImage * rows , VOption *options = 0 );
 VImage profile( VImage * rows , VOption *options = 0 );
 VImage measure( int h , int v , VOption *options = 0 );
 std::vector<double> getpoint( int x , int y , VOption *options = 0 );
+int find_trim( int * top , int * width , int * height , VOption *options = 0 );
 VImage copy( VOption *options = 0 );
 VImage tilecache( VOption *options = 0 );
 VImage linecache( VOption *options = 0 );
 VImage sequential( VOption *options = 0 );
 VImage cache( VOption *options = 0 );
 VImage embed( int x , int y , int width , int height , VOption *options = 0 );
+VImage gravity( VipsCompassDirection direction , int width , int height , VOption *options = 0 );
 VImage flip( VipsDirection direction , VOption *options = 0 );
 VImage insert( VImage sub , int x , int y , VOption *options = 0 );
 VImage join( VImage in2 , VipsDirection direction , VOption *options = 0 );
@@ -79,6 +81,7 @@ VImage msb( VOption *options = 0 );
 VImage byteswap( VOption *options = 0 );
 VImage falsecolour( VOption *options = 0 );
 VImage gamma( VOption *options = 0 );
+static VImage composite( std::vector<VImage> in , std::vector<int> mode , VOption *options = 0 );
 static VImage black( int width , int height , VOption *options = 0 );
 static VImage gaussnoise( int width , int height , VOption *options = 0 );
 static VImage text( char * text , VOption *options = 0 );
@@ -156,6 +159,7 @@ VipsBlob * tiffsave_buffer( VOption *options = 0 );
 void fitssave( char * filename , VOption *options = 0 );
 static VImage thumbnail( char * filename , int width , VOption *options = 0 );
 static VImage thumbnail_buffer( VipsBlob * buffer , int width , VOption *options = 0 );
+VImage thumbnail_image( int width , VOption *options = 0 );
 VImage mapim( VImage index , VOption *options = 0 );
 VImage shrink( double hshrink , double vshrink , VOption *options = 0 );
 VImage shrinkh( int hshrink , VOption *options = 0 );
@@ -229,6 +233,7 @@ VImage morph( VImage mask , VipsOperationMorphology morph , VOption *options = 0
 VImage rank( int width , int height , int index , VOption *options = 0 );
 double countlines( VipsDirection direction , VOption *options = 0 );
 VImage labelregions( VOption *options = 0 );
+VImage fill_nearest( VOption *options = 0 );
 void draw_rect( std::vector<double> ink , int left , int top , int width , int height , VOption *options = 0 );
 void draw_mask( std::vector<double> ink , VImage mask , int x , int y , VOption *options = 0 );
 void draw_line( std::vector<double> ink , int x1 , int y1 , int x2 , int y2 , VOption *options = 0 );

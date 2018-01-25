@@ -86,6 +86,14 @@ extern "C" {
 #define VIPS_FMIN( A, B ) VIPS_MIN( A, B )
 #endif
 
+/* Testing status before the function call saves a lot of time.
+ */
+#define VIPS_ONCE( ONCE, FUNC, CLIENT ) \
+G_STMT_START { \
+        if( G_UNLIKELY( (ONCE)->status != G_ONCE_STATUS_READY ) ) \
+		(void) g_once( ONCE, FUNC, CLIENT ); \
+} G_STMT_END
+
 /* VIPS_RINT() does "bankers rounding", it rounds to the nerarest even integer.
  * For things like image geometry, we want strict nearest int.
  *
@@ -330,6 +338,9 @@ char *vips_realpath( const char *path );
 
 guint32 vips__random( guint32 seed );
 guint32 vips__random_add( guint32 seed, int value );
+
+const char *vips__icc_dir( void );
+const char *vips__windows_prefix( void );
 
 #ifdef __cplusplus
 }

@@ -1,16 +1,28 @@
 var LocalStrategy = require('passport-local').Strategy; 
-var bcrypt = require('bcrypt');
-var User = require('../db').User
+var bcrypt = require('bcryptjs');
+var User = require('../db').Users
 //console.log(User)
 var saltRounds = 10; 
 module.exports = function(passport){
 
-	passport.serializeUser(function(userID, done){
-		done(null, userID);
+	function getUserParams(req) {
+    var body = req.body
+    return {
+        id: body.id,
+        email: body.email,
+        username: body.username,
+        password: body.password
+    	};
+	}
+
+	passport.serializeUser(function(user, done){
+		done(null, user.id)
 	})
 
-	passport.deserializeUser(function(userID,done){
-		done(null, userID)
+	passport.deserializeUser(function(id, done){
+		User.findById(id, function(err, user){
+			done(err, user);
+		})
 	})
 
 	passport.use('local-signup', new LocalStrategy({
@@ -37,8 +49,8 @@ module.exports = function(passport){
 				return done(null, false);
 			} else {
 
-				var userToCreate = request.body;
-
+				var userToCreate = getUserParams(request);
+				console.log(request)
 				bcrypt.hash(userToCreate.password, saltRounds, function(err, hash){
 				userToCreate.password = hash; 
 				User.create(userToCreate)
@@ -51,22 +63,29 @@ module.exports = function(passport){
 	function processLoginCallback(email, password, done){
 		User.findOne({
 			where: {
-				'email' : email 
+				'email': email
 			}
 		})
 		.then(function(user){
-			console.log(user)
+			console.log(user.password)
+			console.log(password)
+			//console.log(result)
 			if (!user) {
 				return done(null, false)
 			}
+			else {
 			bcrypt.compare(password, user.password, function(err, res){
-				if(err) {
-					throw err;
-				} 
-				 return done(null, user) 
-			
-			})
-		})
+				
+				if (err){
+					return done(err)
+				}
+				if (!res){
+					return done(null, false)
+				}
+				return done(null, user);
+				
+			})}
+		});
 	}
 
 }
