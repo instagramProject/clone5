@@ -16,13 +16,13 @@ module.exports = function(passport){
 	}
 
 	passport.serializeUser(function(user, done){
-		done(null, user.id)
+		done(null, user)
 	})
 
-	passport.deserializeUser(function(id, done){
-		User.findById(id, function(err, user){
-			done(err, user);
-		})
+	passport.deserializeUser(function(user, done){
+		//User.findById(id, function(err, user){
+			done(null, user);
+		//})
 	})
 
 	passport.use('local-signup', new LocalStrategy({
@@ -50,7 +50,6 @@ module.exports = function(passport){
 			} else {
 
 				var userToCreate = getUserParams(request);
-				console.log(request)
 				bcrypt.hash(userToCreate.password, saltRounds, function(err, hash){
 				userToCreate.password = hash; 
 				User.create(userToCreate)
@@ -67,8 +66,8 @@ module.exports = function(passport){
 			}
 		})
 		.then(function(user){
-			console.log(user.password)
-			console.log(password)
+			//console.log(user.password)
+			//console.log(password)
 			//console.log(result)
 			if (!user) {
 				return done(null, false)
@@ -82,10 +81,11 @@ module.exports = function(passport){
 				if (!res){
 					return done(null, false)
 				}
+				//req.session.user = user; 
+				//console.log(req.session.user)
 				return done(null, user);
 				
 			})}
 		});
 	}
-
 }

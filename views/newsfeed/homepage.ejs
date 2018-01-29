@@ -7,16 +7,18 @@
   </div>
   <div class="col-md-6 text-center">
   <% for (var i = 0; i < photos.length; i++) { 
-    photo = photos[i]; %>
-    <img src="<%=photo.thumbnail%>" alt="pic should be here"/>
-    <%= photo.caption %>
+    post = photos[i]; %>
+    <img src="<%=post.thumbnail%>" alt="pic should be here"/>
+    <%= post.caption %>
+    <button type='button'>Comment</button>
+    <button type='like'>Like</button>
   <% } %>
     
   </div>
 </div>
 
 <% } else { %>
-  <h3> Product Not Found </h3>
+  <h3> Post Not Found </h3>
 <% } %>
 
 <%- include ../partials/_footer %>
