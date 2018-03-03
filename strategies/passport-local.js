@@ -1,8 +1,8 @@
 var LocalStrategy = require('passport-local').Strategy; 
 var bcrypt = require('bcryptjs');
 var User = require('../db').Users
-//console.log(User)
-var saltRounds = 10; 
+var saltRounds = 10;
+
 module.exports = function(passport){
 
 	function getUserParams(req) {
@@ -37,7 +37,7 @@ module.exports = function(passport){
 		password: 'password'
 	}, processLoginCallback))
 
-	function processSignupCallback(request, email, password, done) {
+	function processSignupCallback(req, email, password, done) {
 		User.findOne({
 			where: {
 				'email': email
@@ -49,8 +49,8 @@ module.exports = function(passport){
 				return done(null, false);
 			} else {
 
-				var userToCreate = getUserParams(request);
-				console.log(request)
+				var userToCreate = getUserParams(req);
+				
 				bcrypt.hash(userToCreate.password, saltRounds, function(err, hash){
 				userToCreate.password = hash; 
 				User.create(userToCreate)
@@ -67,15 +67,13 @@ module.exports = function(passport){
 			}
 		})
 		.then(function(user){
-			console.log(user.password)
-			console.log(password)
-			//console.log(result)
+			console.log('the user id is: ', user.id)
 			if (!user) {
 				return done(null, false)
 			}
 			else {
 			bcrypt.compare(password, user.password, function(err, res){
-				
+		
 				if (err){
 					return done(err)
 				}
