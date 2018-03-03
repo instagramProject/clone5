@@ -4,14 +4,15 @@ var app = express();
 var path = require('path');
 var port = process.env.PORT || 3768;
 var router = express.Router(); 
-var models = require('./models');
+
 var multer = require('multer');
 var sharp = require('sharp');
 var cookieParser = require('cookie-parser')
 var session = require('express-session')
 var userPhotos = require('./model/photo');
 var passport = require('passport');
-const db = require('./db').user;
+//const db = require('./db').user;
+var models = require('./models');
 require('./config/config')
 require('./strategies/passport-local')(passport); 
 
