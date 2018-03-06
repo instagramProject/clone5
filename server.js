@@ -50,7 +50,7 @@ var upload = multer({ storage: storage })
 app.get('/signup', function(req,res){
 
 	models.Users.findAll().then(function(){
-		res.render('index')
+		res.render('signup')
 	})
 });
 
@@ -72,9 +72,26 @@ app.post('/create', upload.single('imageUpload'), function(req,res,next){
 	.resize(300,300)
 	.toFile(__dirname + '/public/thumbnails/' + req.file.filename, function(err, info){
 		userPhotos.addPhoto(req.body, req.file.filename)
+		models.Post.create({
+			caption: req.body.caption,
+			fileName: __dirname + 'public/thumbnails/' + req.file.filename
+		})
 		res.redirect('/homepage')
+		console.log(__dirname + 'public/thumbnails/' + req.file.filename)
+		console.log(req.body.fileName)
+		console.log(req.body.caption)
 	})
 });
+
+/*app.post('/create', function(req,res){
+	models.Post.create({
+		caption: req.body.caption,
+		fileName: req.body.imageUpload
+	})
+	.then(()=>{
+		res.redirect('/homepage')
+	})
+})*/
 
 app.get('/create', function(req,res,next){
 	res.render('newsfeed/create', {title: 'Homepage', nav: 'Photos'})
@@ -84,9 +101,10 @@ app.get('/thumbnails/:id', function(req,res){
 	res.sendFile(__dirname + '/public/thumbnails/' + req.params.id);
 });
 
+
 app.get('/:id', function(req,res, next){
 	var photos = userPhotos.list(); 
-	res.render('newsfeed/homepage', {photos: photos, nav: 'Add Photo' })
+	res.render('newsfeed/homepage', {photos: photos, nav: 'Add Photo'})
 });
 
 app.listen(port, function(){
