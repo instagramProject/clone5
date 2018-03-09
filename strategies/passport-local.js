@@ -67,7 +67,6 @@ module.exports = function(passport){
 			}
 		})
 		.then(function(user){
-			console.log('the user id is: ', user.id)
 			if (!user) {
 				return done(null, false)
 			}

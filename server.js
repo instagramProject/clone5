@@ -63,6 +63,7 @@ app.get('/login', function(req,res){
 })
 
 app.post('/login', passport.authenticate('local-login'), function(req,res){
+	console.log(req.user.id)
 	res.redirect('/homepage');
 })
 
@@ -77,9 +78,9 @@ app.post('/create', upload.single('imageUpload'), function(req,res,next){
 			fileName: __dirname + 'public/thumbnails/' + req.file.filename
 		})
 		res.redirect('/homepage')
-		console.log(__dirname + 'public/thumbnails/' + req.file.filename)
-		console.log(req.body.fileName)
-		console.log(req.body.caption)
+		//console.log(__dirname + 'public/thumbnails/' + req.file.filename)
+		//console.log(req.body.fileName)
+		//console.log(req.body.caption)
 	})
 });
 
